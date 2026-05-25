@@ -1,5 +1,15 @@
 ﻿#include "stdafx.h"
-#include "MyLib.h"
+
+#include "test_EC.h"
+#include "test_OS.h"
+#include "test_Kelvin.h"
+
+#define DEFAULT_MEASURE_INTERVAL 20
+#define DEFAULT_SAMPLES_NUMBER 20
+#define DEFAULT_CURRENT_TEST_OS -5e-3
+#define DEFAULT_DELAY_TIME_MS 1
+
+#define DEFAULT_CURRENT_TEST_KELVIN -5e-3
 
 // multisite settings should be included here
 /*The following code was created for STS PinPlanner,don't modify*/
@@ -34,7 +44,6 @@ DUT_API void HardWareCfg()
 // initialize function will be called before all the test functions.
 DUT_API void InitBeforeTestFlow()
 {
-
 }
 /************************************************************************/
 /*                                                                      */
@@ -126,250 +135,22 @@ DUT_API int TEST_KELVIN(short funcindex, LPCTSTR funclabel)
 	*/
 
 	// NFAULT
-	{
 
-		nFAULT.Set(FI, -5e-3, FPVI10_5V, FPVI10_10MA, RELAY_ON); // Cấp dòng ngược 5mA
-		delay_ms(1);											 // Đợi 1ms
-		nFAULT.MeasureVI(20, 20);								 // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = nFAULT.GetMeasResult(0, MVRET);		 // Lưu giá trị điện áp vào bộ nhớ đệm
-			R_nFAULT_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		nFAULT.Set(FI, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		nFAULT.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		delay_us(500);
-		nFAULT.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_OFF);
-	}
-
-	// AISEN
-	{
-
-		AISEN.Set(FI, -5e-3, FPVI10_5V, FPVI10_10MA, RELAY_ON); // Cấp dòng ngược 5mA
-		delay_ms(1);											// Đợi 1ms
-		AISEN.MeasureVI(20, 20);								// Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AISEN.GetMeasResult(0, MVRET);		// Lưu giá trị điện áp vào bộ nhớ đệm
-			R_AISEN_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		AISEN.Set(FI, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		AISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		delay_us(500);
-		AISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_OFF);
-	}
-
-	// BISEN
-	{
-
-		BISEN.Set(FI, -5e-3, FPVI10_5V, FPVI10_10MA, RELAY_ON); // Cấp dòng ngược 5mA
-		delay_ms(1);											// Đợi 1ms
-		BISEN.MeasureVI(20, 20);								// Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BISEN.GetMeasResult(0, MVRET);		// Lưu giá trị điện áp vào bộ nhớ đệm
-			R_BISEN_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		BISEN.Set(FI, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		BISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		delay_us(500);
-		BISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_OFF);
-	}
-
-	/*----------------------------------------------------------------------------------------------*/
-	/*----------------------------------------------------------------------------------------------*/
-	/*----------------------------------------------------------------------------------------------*/
-	/*----------------------------------------------------------------------------------------------*/
-
-	// NSLEEP
-	{
-		nSLEEP.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		nSLEEP.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = nSLEEP.GetMeasResult(0, MVRET);		 //
-			R_nSLEEP_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		nSLEEP.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AOUT1
-	{
-		AOUT1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AOUT1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AOUT1.GetMeasResult(0, MVRET);		//
-			R_AOUT1_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		AOUT1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AOUT2
-	{
-		AOUT2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AOUT2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AOUT2.GetMeasResult(0, MVRET);		//
-			R_AOUT2_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		AOUT2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BOUT2
-	{
-		BOUT2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BOUT2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BOUT2.GetMeasResult(0, MVRET);		//
-			R_BOUT2_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		BOUT2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BOUT1
-	{
-		BOUT1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BOUT1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BOUT1.GetMeasResult(0, MVRET);		//
-			R_BOUT1_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		BOUT1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AIN1
-	{
-		AIN1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AIN1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AIN1.GetMeasResult(0, MVRET);	   //
-			R_AIN1_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		AIN1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AIN2
-	{
-		AIN2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AIN2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AIN2.GetMeasResult(0, MVRET);	   //
-			R_AIN2_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		AIN2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BIN1
-	{
-		BIN1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BIN1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BIN1.GetMeasResult(0, MVRET);	   //
-			R_BIN1_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		BIN1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BIN2
-	{
-		BIN2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BIN2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BIN2.GetMeasResult(0, MVRET);	   //
-			R_BIN2_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		BIN2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// VREF
-	{
-		VREF.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		VREF.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = VREF.GetMeasResult(0, MVRET);	   //
-			R_VREF_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		VREF.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		VREF.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		VREF.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// VINT
-	{
-		VINT.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		VINT.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = VINT.GetMeasResult(0, MVRET);	   //
-			R_VINT_KELVIN->SetTestResult(0, 0, buffer[0]); //
-		}
-
-		VINT.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		VINT.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		VINT.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
+	R_nFAULT_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_nFault(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_AOUT1_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_AOUT1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_AISEN_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_AISEN(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_AOUT2_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_AOUT2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_BOUT2_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_BOUT2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_BISEN_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_BISEN(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_BOUT1_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_BOUT1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_nSLEEP_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_nSLEEP(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_AIN1_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_AIN1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_AIN2_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_AIN2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_VINT_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_VINT(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_VM_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_VM(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_VREF_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_VREF(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_BIN2_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_BIN2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
+	R_BIN1_KELVIN->SetTestResult(SITE_1, 0, test_KELVIN_BIN1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_KELVIN, DEFAULT_DELAY_TIME_MS));
 
 	// TODO: Add your function code here
 	return 0;
@@ -396,252 +177,23 @@ DUT_API int TEST_OPEN_SHORT(short funcindex, LPCTSTR funclabel)
 	//}}AFX_STS_PARAM_PROTOTYPES
 
 	// NFAULT
-	{
 
-		nFAULT.Set(FI, -5e-3, FPVI10_5V, FPVI10_10MA, RELAY_ON); // Cấp dòng ngược 5mA, 0.2/0.1 ms
-		delay_ms(1);											 // Đợi 1ms
-		nFAULT.MeasureVI(20, 20);								 // Number of samples: 20 , sample interval: 20us = 400 us
+	OS_nFAULT->SetTestResult(SITE_1, 0, test_OS_nFault(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_AOUT1->SetTestResult(SITE_1, 0, test_OS_AOUT1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_AISEN->SetTestResult(SITE_1, 0, test_OS_AISEN(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_AOUT2->SetTestResult(SITE_1, 0, test_OS_AOUT2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_BOUT2->SetTestResult(SITE_1, 0, test_OS_BOUT2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_BISEN->SetTestResult(SITE_1, 0, test_OS_BISEN(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_BOUT1->SetTestResult(SITE_1, 0, test_OS_BOUT1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_nSLEEP->SetTestResult(SITE_1, 0, test_OS_nSLEEP(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_AIN1->SetTestResult(SITE_1, 0, test_OS_AIN1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_AIN2->SetTestResult(SITE_1, 0, test_OS_AIN2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_VINT->SetTestResult(SITE_1, 0, test_OS_VINT(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_VM->SetTestResult(SITE_1, 0, test_OS_VM(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_VREF->SetTestResult(SITE_1, 0, test_OS_VREF(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_BIN2->SetTestResult(SITE_1, 0, test_OS_BIN2(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
+	OS_BIN1->SetTestResult(SITE_1, 0, test_OS_BIN1(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL, DEFAULT_CURRENT_TEST_OS, DEFAULT_DELAY_TIME_MS));
 
-		{
-			buffer[0] = nFAULT.GetMeasResult(0, MVRET); // Lưu giá trị điện áp vào bộ nhớ đệm
-			OS_nFAULT->SetTestResult(0, 0, buffer[0]);	//
-		}
-
-		nFAULT.Set(FI, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		nFAULT.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		delay_us(500);
-		nFAULT.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_OFF);
-	}
-
-	// AISEN
-	{
-
-		AISEN.Set(FI, -5e-3, FPVI10_5V, FPVI10_10MA, RELAY_ON); // Cấp dòng ngược 5mA
-		delay_ms(1);											// Đợi 1ms
-		AISEN.MeasureVI(20, 20);								// Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AISEN.GetMeasResult(0, MVRET); // Lưu giá trị điện áp vào bộ nhớ đệm
-			OS_AISEN->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		AISEN.Set(FI, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		AISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		delay_us(500);
-		AISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_OFF);
-	}
-
-	// BISEN
-	{
-
-		BISEN.Set(FI, -5e-3, FPVI10_5V, FPVI10_10MA, RELAY_ON); // Cấp dòng ngược 5mA
-		delay_ms(1);											// Đợi 1ms
-		BISEN.MeasureVI(20, 20);								// Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BISEN.GetMeasResult(0, MVRET); // Lưu giá trị điện áp vào bộ nhớ đệm
-			OS_BISEN->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		BISEN.Set(FI, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		BISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_ON);
-		delay_us(500);
-		BISEN.Set(FV, 0, FPVI10_5V, FPVI10_10MA, RELAY_OFF);
-	}
-
-	/*----------------------------------------------------------------------------------------------*/
-	/*----------------------------------------------------------------------------------------------*/
-	/*----------------------------------------------------------------------------------------------*/
-	/*----------------------------------------------------------------------------------------------*/
-
-	// NSLEEP
-	{
-		nSLEEP.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		nSLEEP.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = nSLEEP.GetMeasResult(0, MVRET); //
-			OS_nSLEEP->SetTestResult(0, 0, buffer[0]);	//
-		}
-
-		nSLEEP.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AOUT1
-	{
-		AOUT1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AOUT1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AOUT1.GetMeasResult(0, MVRET); //
-			OS_AOUT1->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		AOUT1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AOUT2
-	{
-		AOUT2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AOUT2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AOUT2.GetMeasResult(0, MVRET); //
-			OS_AOUT2->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		AOUT2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BOUT2
-	{
-		BOUT2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BOUT2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BOUT2.GetMeasResult(0, MVRET); //
-			OS_BOUT2->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		BOUT2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BOUT2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BOUT1
-	{
-		BOUT1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BOUT1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BOUT1.GetMeasResult(0, MVRET); //
-			OS_BOUT1->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		BOUT1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BOUT1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AIN1
-	{
-		AIN1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AIN1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AIN1.GetMeasResult(0, MVRET); //
-			OS_AIN1->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		AIN1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// AIN2
-	{
-		AIN2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		AIN2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = AIN2.GetMeasResult(0, MVRET); //
-			OS_AIN2->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		AIN2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BIN1
-	{
-		BIN1.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BIN1.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BIN1.GetMeasResult(0, MVRET); //
-			OS_BIN1->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		BIN1.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// BIN2
-	{
-		BIN2.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		BIN2.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = BIN2.GetMeasResult(0, MVRET); //
-			OS_BIN2->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		BIN2.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		BIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		BIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// VREF
-	{
-		VREF.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		VREF.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = VREF.GetMeasResult(0, MVRET); //
-			OS_VREF->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		VREF.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		VREF.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		VREF.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// VINT
-	{
-		VINT.Set(FI, -5e-3, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_ms(1);
-		VINT.MeasureVI(20, 20); // Number of samples: 20 , sample interval: 20us = 400 us
-
-		{
-			buffer[0] = VINT.GetMeasResult(0, MVRET); //
-			OS_VINT->SetTestResult(0, 0, buffer[0]);  //
-		}
-
-		VINT.Set(FI, 0.0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		VINT.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
-		delay_us(500);
-		VINT.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-	}
-
-	// TODO: Add your function code here
 	return 0;
 }
 
@@ -748,49 +300,8 @@ DUT_API int EC_MEASURE(short funcindex, LPCTSTR funclabel)
 
 	// Power Supplies (VM, VINT)------Start---------------------------//
 	// Test number 3
-	test_VM_Sleep_Mode_Current(I_VM_slp);
 
-	// Test number 7
-	test_VINT_Voltage(VINT);
-	//------------------------------END------------------------------//
-
-	// Logic-level inputs (BIN1, BIN2, nSLEEP)--------Start--------------//
-	// Test number 15
-	test_Input_Logic_Low_Current(I_L_BIN1, I_L_BIN2);
-
-	// Test number 17
-	test_Input_Logic_High_Current(I_H_BIN1, I_L_BIN2);
-
-	// Test number 19
-	R_PD_BIN1->SetTestResult(1, 0, 5 / buffer[0]); // R_PD_BIN1 = 5 / I_H_BIN1
-	R_PD_BIN2->SetTestResult(1, 0, 5 / buffer[1]); // R_PD_BIN2 = 5 / I_H_BIN2
-
-	// Test number 16
-	test_Input_Logic_Low_Current(I_L_SLP);
-
-	// Test number 17
-	test_Input_Logic_High_Current(I_H_SLP);
-
-	// Test number 19
-	R_PD_SLP->SetTestResult(1, 0, 5 / buffer[0]); // R_PD_SLP = 5 / I_H_SLP
-	//-----------------------------END---------------------------------------//
-
-	// Tri-level logic inputs (AIN1, AIN2)---------Start-----------------//
-	// Test number 28
-	test_TriLevel_Logic_Low_Current(I_L_AIN1, I_L_AIN2);
-
-	// Test number 31 ??????????????????????????
-	R_PU_AIN1->SetTestResult(1, 0, 5 / buffer[0]);
-	R_PU_AIN2->SetTestResult(1, 0, 5 / buffer[1]);
-
-	// Test number 29
-	test_TriLevel_Logic_High_Current(I_H_AIN1, I_H_AIN2);
-
-	// Test number 30
-	R_PD_AIN1->SetTestResult(1, 0, 5 / buffer[0]);
-	R_PD_AIN2->SetTestResult(1, 0, 5 / buffer[1]);
-
-	//---------------------------------END--------------------------------------//
+	I_VM_slp->SetTestResult(SITE_1, 0, test_I_VM_slp(DEFAULT_SAMPLES_NUMBER, DEFAULT_MEASURE_INTERVAL));
 
 	return 0;
 }
