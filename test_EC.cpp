@@ -8,7 +8,7 @@
 
 #define DEFAULT_DELAY_TIME_MS 1
 
-double TEST_EC_BUFFER[4] = {0};
+double TEST_EC_BUFFER[4] = {0.0};
 
 double test_I_VM_slp(int samples_number = DEFAULT_SAMPLES_NUMBER,
                      int measure_interval = DEFAULT_MEASURE_INTERVAL)
@@ -25,8 +25,7 @@ double test_I_VM_slp(int samples_number = DEFAULT_SAMPLES_NUMBER,
 
     delay_ms(1);
 
-    VM.MeasureVI(samples_number, measure_interval, MEAS_NORMAL); // 20 samples, 20usS time interval
-
+    VM.MeasureVI(samples_number, measure_interval, MEAS_NORMAL);         // 20 samples, 20usS time interval
     TEST_EC_BUFFER[0] = VM.GetMeasResult(SITE_1, MIRET, AVERAGE_RESULT); // get avarage result of Current by putting retType = MIRET
 
     AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
@@ -58,30 +57,20 @@ double test_VINT(int samples_number = DEFAULT_SAMPLES_NUMBER,
     BIN2.Set(FV, 3.3, FOVI_5V, FOVI_10MA, RELAY_ON);
     delay_ms(1);
 
-    AOUT2.Set(FI, -1e-3, FOVI_20V, FOVI_10MA, RELAY_ON); // AOUT being a 1 mA load in range of 20V 10mA, rising time set to default value of 0.1mS
-    // AOUT2.SetClamp();
-    delay_us(200);
-
     VINT.MeasureVI(samples_number, measure_interval, MEAS_NORMAL);
-
     TEST_EC_BUFFER[0] = VINT.GetMeasResult(1, MVRET, AVERAGE_RESULT);
-
-    AOUT2.Set(FI, 0, FOVI_20V, FOVI_10MA, RELAY_ON);
-    delay_us(200);
-    AOUT2.Set(FI, 0, FOVI_20V, FOVI_10MA, RELAY_OFF);
-    delay_us(200);
 
     AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     BIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     BIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-    delay_us(200);
+    delay_ms(1);
 
     nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
-    delay_us(200);
+    delay_ms(1);
 
     VM.Set(FV, 0, FPVI10_20V, FPVI10_10MA, RELAY_ON);
-    delay_us(200);
+    delay_ms(1);
     VM.Set(FV, 0, FPVI10_20V, FPVI10_10MA, RELAY_OFF);
 
     return TEST_EC_BUFFER[0];
@@ -102,7 +91,7 @@ double test_I_L_BIN1(int samples_number = DEFAULT_SAMPLES_NUMBER,
     BIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
     delay_ms(1);
 
-    BIN1.MeasureVI(samples_number, measure_interval, MEAS_NORMAL); // 20 samples, 1uS time interval
+    BIN1.MeasureVI(samples_number, measure_interval, MEAS_NORMAL);
     TEST_EC_BUFFER[0] = BIN1.GetMeasResult(SITE_1, MIRET, AVERAGE_RESULT);
 
     AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
@@ -284,6 +273,7 @@ double test_I_L_AIN1(int samples_number = DEFAULT_SAMPLES_NUMBER,
     TEST_EC_BUFFER[0] = AIN1.GetMeasResult(SITE_1, MIRET, AVERAGE_RESULT);
 
     AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
+    AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     // BIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     // BIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     delay_ms(1);
@@ -325,6 +315,7 @@ double test_I_L_AIN2(int samples_number = DEFAULT_SAMPLES_NUMBER,
     delay_ms(1);
 
     nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_ON);
+    delay_ms(1);
     nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     delay_ms(1);
 
@@ -355,6 +346,7 @@ double test_I_H_AIN1(int samples_number = DEFAULT_SAMPLES_NUMBER,
     TEST_EC_BUFFER[0] = AIN1.GetMeasResult(SITE_1, MIRET, AVERAGE_RESULT);
 
     AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
+    AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     delay_ms(1);
 
     nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
@@ -385,6 +377,7 @@ double test_I_H_AIN2(int samples_number = DEFAULT_SAMPLES_NUMBER,
     TEST_EC_BUFFER[0] = AIN2.GetMeasResult(SITE_1, MIRET, AVERAGE_RESULT);
 
     AIN1.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
+    AIN2.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
     delay_ms(1);
 
     nSLEEP.Set(FV, 0, FOVI_5V, FOVI_10MA, RELAY_OFF);
