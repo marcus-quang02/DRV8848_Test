@@ -27,9 +27,9 @@ double test_I_H_SLP(int samples_number, int measure_interval);
 
 double test_I_H_nFAULT(int samples_number, int measure_interval);
 
-void input_setup(int AIN1_state, int AIN2_state, int BIN1_state, int BIN2_state);
+void input_setup(int input);
 
-double test_current_fovi(FOVI *fovi, bool sleep, int input);
-double test_current_fpvi(FPVI10 *fovi, bool sleep, int input);
+double test_fovi(FOVI *fovi, bool sleep, int input, bool VI);
+double test_fpvi(FPVI10 *fovi, bool sleep, int input, bool VI);
 
 #endif // __AFXWIN_H__

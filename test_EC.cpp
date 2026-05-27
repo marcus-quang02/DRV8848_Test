@@ -47,15 +47,18 @@ DUT_API void test(short funcindex, LPCTSTR funclabel)
 
         if (my_table[i].fpvi != nullptr)
         {
-            test_fpvi(my_table[i].fpvi, my_table[i].sleep, my_table[i].input, my_table[i].VI);
+            double result = test_fpvi(my_table[i].fpvi, my_table[i].sleep, my_table[i].input, my_table[i].VI);
+            SetData->SetTestResult(SITE_1, 0, result);
         }
         else if (my_table[i].fovi != nullptr)
         {
-            test_fovi(my_table[i].fovi, my_table[i].sleep, my_table[i].input, my_table[i].VI);
+            double result = test_fovi(my_table[i].fovi, my_table[i].sleep, my_table[i].input, my_table[i].VI);
+            SetData->SetTestResult(SITE_1, 0, result);
         }
         else
         {
             break;
+            // std:: cout << i << std:: endl;
         }
     }
 }
