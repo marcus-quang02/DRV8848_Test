@@ -39,32 +39,6 @@ QTMU_PLUS qtmu2(2, "qtmu2");
 FPVI10 AISEN(3, "AISEN");
 FOVI nFAULT(10, "nFAULT");
 
-typedef struct
-{
-	bool bTest; // whether test this pin
-	FPVI10 *pin;
-	FOVI *fpin;
-	QTMU_PLUS *qtmu;
-	CParam *param;
-} PinParam;
-
-PinParam pinParamArray[] = {
-	{true, &VM, nullptr, nullptr, nullptr},
-	{true, &AOUT1, nullptr, nullptr, nullptr},
-	{true, &AOUT2, nullptr, nullptr, nullptr},
-	{true, nullptr, &nSLEEP, nullptr, nullptr},
-	{true, nullptr, &BOUT2, nullptr, nullptr},
-	{true, nullptr, &BISEN, nullptr, nullptr},
-	{true, nullptr, &BOUT1, nullptr, nullptr},
-	{true, nullptr, &BIN1, nullptr, nullptr},
-	{true, nullptr, &BIN2, nullptr, nullptr},
-	{true, nullptr, &VREF, nullptr, nullptr},
-	{true, nullptr, &VINT, nullptr, nullptr},
-	{true, nullptr, &AIN2, nullptr, nullptr},
-	{true, nullptr, &AIN1, nullptr, nullptr},
-	{true, &AISEN, nullptr, nullptr, nullptr},
-	{true, nullptr, &nFAULT, nullptr, nullptr}};
-
 /****multisite settings should be included here****/
 DUT_API void HardWareCfg()
 {
@@ -372,7 +346,7 @@ double EC_MEASURE_input_logic_low_voltage(FOVI &yINx, FOVI &yOUTx)
 	BIN2.Set(FV, LOGIC_LOW_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);	   // Set BIN2	  = 0V
 
 	// Prepare AWG Data
-	double Trig_Point = 0.0;						// moment when catch trigger point
+	int Trig_Point = 0;								// moment when catch trigger point
 	double trig_voltage = 0.1 * LOGIC_HIGH_VOLTAGE; // trig voltage = 0.33V
 	int sam = 100;									// data size of AWG pattern
 	int interval = 10;								// interval time of AWG pattern, unit is uS
@@ -389,12 +363,15 @@ double EC_MEASURE_input_logic_low_voltage(FOVI &yINx, FOVI &yOUTx)
 	yINx.AwgSelect("V_L_yINx", 0, sam - 1, sam - 1, interval);
 	yOUTx.SetMeasVTrig(trig_voltage, TRIG_FALLING); // Set trigger at trig_voltage, falling
 	yINx.MeasureVI(sam, interval, MEAS_AWG);		// Make sure each step always measure
-	STSEnableAWG(&yINx);							// enable AWG pattern for yINx
-	STSEnableMeas(&yINx);							// enable measurement for yINx
-	STSAWGRun();									// Enable AWG and measurement synchronously
+	yOUTx.MeasureVI(sam, interval, MEAS_AWG);		// Make sure each step always measure
+
+	STSEnableAWG(&yINx);		  // enable AWG pattern for yINx
+	STSEnableMeas(&yINx, &yOUTx); // enable measurement for yINx
+	STSAWGRun();				  // Enable AWG and measurement synchronously
+
 	// measure block
-	Trig_Point = yINx.GetMeasResult(0, MVRET, TRIG_RESULT); // Get the position of trigger point for yINx
-	result = yINx.GetMeasResult(0, MVRET, Trig_Point);		// Read the voltage value of yINx on trigger position
+	Trig_Point = yOUTx.GetMeasResult(0, MVRET, TRIG_RESULT); // Get the position of trigger point for yINx
+	result = awg_pattern[Trig_Point];						 // Read the voltage value of yINx on trigger position, use the voltage value in awg_pattern as result because it's more accurate than measure result
 	return result;
 }
 /* Input logic high voltage */ /* y=AorB, x=1or2 */
@@ -465,6 +442,7 @@ double EC_MEASURE_input_logic_high_voltage(FOVI &yINx, FOVI &yOUTx)
 	STSEnableAWG(&yINx);						   // enable AWG pattern for BINx
 	STSEnableMeas(&yINx);						   // enable measurement for BINx
 	STSAWGRun();								   // Enable AWG and measurement synchronously
+
 	// measure block
 	Trig_Point = yINx.GetMeasResult(0, MVRET, TRIG_RESULT); // Get the position of trigger point for yINx
 	result = yINx.GetMeasResult(0, MVRET, Trig_Point);		// Read the voltage value of yINx on trigger position
@@ -683,6 +661,7 @@ double EC_MEASURE_I_OCP_N()
 	result = AOUT1.GetMeasResult(0, MIRET, Trig_Point); // uint A
 	return result;
 }
+
 double EC_MEASURE_I_OCP_P()
 {
 	double result = 0.0;
@@ -860,23 +839,28 @@ double EC_MEASURE_power_on_time()
 	BIN1.Set(FV, 0, FOVI_5V, FOVI_100MA, RELAY_ON);			 // BIN1 = 0V
 	BIN2.Set(FV, 0, FOVI_5V, FOVI_100MA, RELAY_ON);			 // BIN2 = 0V
 	// AWG prepare
-	int trig_point_nfault = 0, trig_point_aout = 0;
+	double trig_point_nfault = 0, trig_point_aout = 0;
 	double trig_nFault_value = 3.0, trig_aout_value = 0.9 * LOGIC_HIGH_VOLTAGE;
 	int sam = 100;
 	int interval = 10; // interval = 10us
 	double awg_pattern[100] = {0.0};
+
 	// AWG setup
 	STSAWGCreateSineData(&awg_pattern[0], sam, 1, 0, 12);
 	VM.AwgLoader("VM", FV, FPVI10_20V, FPVI10_1A, awg_pattern, sam);
 	VM.Set(FV, 0, FPVI10_20V, FPVI10_1A, RELAY_ON);
 	VM.AwgSelect("VM", 0, sam - 1, sam - 1, interval);
+
 	nFAULT.SetMeasVTrig(trig_nFault_value, TRIG_RISING);
 	AOUT1.SetMeasVTrig(trig_aout_value, TRIG_RISING);
+
 	nFAULT.MeasureVI(sam, interval, MEAS_AWG);
 	AOUT1.MeasureVI(sam, interval, MEAS_AWG);
+
 	STSEnableAWG(&VM);
 	STSEnableMeas(&nFAULT, &AOUT1);
 	STSAWGRun();
+
 	// Measure
 	trig_point_nfault = nFAULT.GetMeasResult(0, MVRET, TRIG_RESULT);
 	trig_point_aout = AOUT1.GetMeasResult(0, MVRET, TRIG_RESULT);
@@ -1124,8 +1108,8 @@ DUT_API int EC_MEASURE(short funcindex, LPCTSTR funclabel)
 	// TODO: Add your function code here
 	EC_MEASURE_setup();
 
-	/* I_VM */
-	// I_VM_01	(AIN1 = 0V, AIN2 = 3.3V, BIN1 = 0V, BIN2 = 3.3V)
+	/*2.I_VM */
+	// 2.1.I_VM_01	(AIN1 = 0V, AIN2 = 3.3V, BIN1 = 0V, BIN2 = 3.3V)
 	AIN1.Set(FV, LOGIC_LOW_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
 	AIN2.Set(FV, LOGIC_HIGH_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
 	BIN1.Set(FV, LOGIC_LOW_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
@@ -1135,7 +1119,7 @@ DUT_API int EC_MEASURE(short funcindex, LPCTSTR funclabel)
 	adresult = VM.GetMeasResult(0, MIRET);					  // Measure I_VM
 	I_VM_01->SetTestResult(0, 0, adresult * 1000);			  // Change unit from A to mA
 
-	// I_VM_10 (AIN1 = 3.3V, AIN2 = 0V, BIN1 = 3.3V, BIN2 = 0V)
+	// 2.2 I_VM_10 (AIN1 = 3.3V, AIN2 = 0V, BIN1 = 3.3V, BIN2 = 0V)
 	AIN2.Set(FV, LOGIC_LOW_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
 	AIN1.Set(FV, LOGIC_HIGH_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
 	BIN2.Set(FV, LOGIC_LOW_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
@@ -1145,7 +1129,7 @@ DUT_API int EC_MEASURE(short funcindex, LPCTSTR funclabel)
 	adresult = VM.GetMeasResult(0, MIRET);		   // Measure I_VM
 	I_VM_10->SetTestResult(0, 0, adresult * 1000); // Change unit from A to mA
 
-	// I_VM_11 (AIN1 = 3.3V, AIN2 = 3.3V, BIN1 = 3.3V, BIN2 = 3.3V)
+	// 2.3 I_VM_11 (AIN1 = 3.3V, AIN2 = 3.3V, BIN1 = 3.3V, BIN2 = 3.3V)
 	AIN1.Set(FV, LOGIC_HIGH_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
 	AIN2.Set(FV, LOGIC_HIGH_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
 	BIN1.Set(FV, LOGIC_HIGH_VOLTAGE, FOVI_5V, FOVI_100MA, RELAY_ON);
@@ -1155,26 +1139,48 @@ DUT_API int EC_MEASURE(short funcindex, LPCTSTR funclabel)
 	adresult = VM.GetMeasResult(0, MIRET);		   // Measure I_VM
 	I_VM_11->SetTestResult(0, 0, adresult * 1000); // Change unit from A to mA
 
-	/* input logic low voltage */
+	/*4.Sleep time */
+
+	/*5. Wake time */
+
+	/*6. Power on time */
+
+	/*7. VINT Voltage */
+
+	/*8. V_L_BIN1 */
+
+	/*9. V_L_BIN2 */
+
+	/*10. V_L_nSLP */
 	double v_l_bin1 = EC_MEASURE_input_logic_low_voltage(BIN1, BOUT1);
 	double v_l_bin2 = EC_MEASURE_input_logic_low_voltage(BIN2, BOUT2);
 	double v_l_nslp = EC_MEASURE_input_logic_low_voltage(nSLEEP, BOUT2);
 	V_L_BIN1->SetTestResult(0, 0, v_l_bin1);
 	V_L_BIN2->SetTestResult(0, 0, v_l_bin2);
 	V_L_nSLP->SetTestResult(0, 0, v_l_nslp);
-
-	/* Input logic high voltage */
+	/*11. V_H_BIN1 */
+	/*12. V_H_BIN2 */
+	/*13. V_H_nSLP */
 	double v_h_bin1 = EC_MEASURE_input_logic_high_voltage(BIN1, BOUT1);
 	double v_h_bin2 = EC_MEASURE_input_logic_high_voltage(BIN2, BOUT2);
 	double v_h_nslp = EC_MEASURE_input_logic_high_voltage(nSLEEP, BOUT2);
 	V_H_BIN1->SetTestResult(0, 0, v_h_bin1);
 	V_H_BIN2->SetTestResult(0, 0, v_h_bin2);
 	V_H_nSLP->SetTestResult(0, 0, v_h_nslp);
-
-	/* Input logic hysteresis */
+	/*14. V_hys_B */
 	V_hys_BIN1->SetTestResult(0, 0, v_h_bin1 - v_l_bin1);
 	V_hys_BIN2->SetTestResult(0, 0, v_h_bin2 - v_l_bin2);
 	V_hys_nSLP->SetTestResult(0, 0, v_h_nslp - v_l_nslp);
+	/*15. I_L_BIN1 & I_L_BIN2 */
+	/*16. I_L_nSLP */
+	/*17. I_H_BIN1 & I_H_BIN2 */
+	/*18. I_H_nSLP */
+
+	/* input logic low voltage */
+
+	/* Input logic high voltage */
+
+	/* Input logic hysteresis */
 
 	/* Tri level input logic low voltage */
 	double v_l_ain1 = EC_MEASURE_input_logic_low_voltage(AIN1, AOUT1);
@@ -1213,6 +1219,7 @@ DUT_API int EC_MEASURE(short funcindex, LPCTSTR funclabel)
 	AOUT2.MeasureVI(SAMPLE_TIME_MEASURE, SAMPLE_PERIOD_MEASURE);
 	double rds_v_aout2 = AOUT2.GetMeasResult(0, MVRET);
 	RDS_V_AOUT2->SetTestResult(0, 0, rds_v_aout2);
+
 	// RDS_V_AISEN
 	AISEN.MeasureVI(SAMPLE_TIME_MEASURE, SAMPLE_PERIOD_MEASURE);
 	double rds_v_aisen = AISEN.GetMeasResult(0, MVRET);
